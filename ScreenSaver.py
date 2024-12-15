@@ -78,6 +78,7 @@ class Display:
             self.can_1.pack(fill = "both",expand = True, ipadx = 0 , ipady = 0)
             if self.pic == 0:
                 self.roulette()
+                
         else:
             self.t.rowconfigure(index = 0,weight = 1,uniform="u")
             self.t.rowconfigure(index = 1,weight = 2,uniform="u")
@@ -162,7 +163,9 @@ x.create()
 z = Display(win,y[1],typeof = "P")
 z.create()
 win.mainloop()       
-        
+
+#Windows wallpaper
+#img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper")
 def resiszer(img):
     ...
     
