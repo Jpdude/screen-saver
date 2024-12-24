@@ -2,31 +2,15 @@ from tkinter import *
 win = Tk()
 win.title("Window Manager")
 
-#Making the top most frame in red
-topmost_f = Canvas(win, highlightbackground = "red", highlightthickness = 1 ,scrollregion=(0,0,500,500))
-# for x in y.windows():
-#   f.columnfigure(index = x , weight = 1 )
-
-# Where I configured the grid layout of the topmost frame
-topmost_f.columnconfigure(index = 0 , weight = 1 , uniform ="u")
-topmost_f.columnconfigure(index = 1 , weight = 1 , uniform ="u")
-topmost_f.columnconfigure(index = 2 , weight = 1 , uniform ="u")
-
-topmost_f.rowconfigure(index = 0 , weight = 1 , uniform ="u")
-topmost_f.rowconfigure(index = 1 , weight = 10 , uniform ="u")
-topmost_f.rowconfigure(index = 2 , weight = 1 , uniform ="u")
-
-vbar=Scrollbar(win,orient=VERTICAL)
-vbar.pack(side=RIGHT,fill=Y)
-vbar.config(command=topmost_f.yview)
-
-topmost_f.config( yscrollcommand=vbar.set)
-topmost_f.pack(side = LEFT , fill = "both" , expand = True)
+##win.rowconfigure(index = 0 , weight = 1 , uniform ="u")
+##win.rowconfigure(index = 1 , weight = 2 , uniform ="u")
 #=====================ENDS=================================
 
-
-heading_label = Label(topmost_f , text = "Detected Windows", font = ("comic sans",20,"bold")).grid( row = 0 , column = 0 , sticky = "nw")
-
+heading_label = Label(win , text = "Detected Windows", font = ("comic sans",20,"bold")).pack(side = TOP , expand = True)
+topmost_frame = Frame(win, highlightbackground = "black", highlightthickness = 1 , bg = "red" )
+topmost_frame.pack( side = BOTTOM , expand = True , fill = BOTH)
+#heading_label = Label(topmost_frame , text = "Detected Windows", font = ("comic sans",20,"bold")).pack()
+print(topmost_frame.pack_info())
 class Screen:
     def __init__(self,master,screen):
         self.master = master
@@ -37,13 +21,13 @@ class Screen:
         self.f = Frame(self.master, highlightbackground = "black", highlightthickness = 1 )
         self.f.rowconfigure(index = 0 , weight = 0 , uniform = "p")
         self.f.rowconfigure(index = 1 , weight = 1, uniform = "p")
-        self.f.grid(row = row, column = column ,sticky = "nsew" ,padx = 15  )
+        self.f.grid(row = row, column = column ,sticky = "nsew" ,padx = 20  )
         
         
         viewframe = Frame(self.f , bg = "red" , highlightbackground = "yellow", highlightthickness = 1)
         viewframe.grid(row = 0 , column = 0 ,sticky = "nsew")
 
-        view_canvas = Canvas(viewframe ,  width = 600 , height = 300 ,bg = "#000000")
+        view_canvas = Canvas(viewframe ,  width = 500 , height = 300 ,bg = "#000000")
         view_canvas.pack(fill = "both" , expand = True)
         
         
@@ -52,12 +36,10 @@ class Screen:
         toolframe.grid(row = 1 , column = 0)
 
         
-s = Screen(topmost_f,"hey")
-s1 = Screen(topmost_f, "heyoo")
-s2 = Screen(topmost_f, "heyoo")
-s3 = Screen(topmost_f, "heyoo")
-s.build(1,0)
-s1.build(1,1)
-s2.build(1,2)
-s3.build(2,0)
+##s = Screen(topmost_f,"hey")
+##s1 = Screen(topmost_f, "heyoo")
+##s2 = Screen(topmost_f, "heyoo")
+##s.build(1,0)
+##s1.build(1,1)
+##s2.build(1,2)
 win.mainloop()        
