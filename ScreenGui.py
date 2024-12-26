@@ -1,18 +1,35 @@
 from tkinter import *
 win = Tk()
 win.title("Window Manager")
+from PIL import Image , ImageTk
+img = Image.open("poo2.jpg")
+img = img.resize((480,270))
+img1 = ImageTk.PhotoImage(img)
 
-##win.rowconfigure(index = 0 , weight = 1 , uniform ="u")
-##win.rowconfigure(index = 1 , weight = 2 , uniform ="u")
+topmost_f = Canvas(win, highlightbackground = "red", highlightthickness = 1 ,scrollregion=(0,0,500,500))
+# for x in y.windows():
+#   f.columnfigure(index = x , weight = 1 )
+
+# Where I configured the grid layout of the topmost frame
+topmost_f.columnconfigure(index = 0 , weight = 1 , uniform ="u")
+topmost_f.columnconfigure(index = 1 , weight = 1 , uniform ="u")
+topmost_f.columnconfigure(index = 2 , weight = 1 , uniform ="u")
+
+topmost_f.rowconfigure(index = 0 , weight = 1 , uniform ="u")
+topmost_f.rowconfigure(index = 1 , weight = 10 , uniform ="u")
+topmost_f.rowconfigure(index = 2 , weight = 1 , uniform ="u")
+
+vbar=Scrollbar(win,orient=VERTICAL)
+vbar.pack(side=RIGHT,fill=Y)
+vbar.config(command=topmost_f.yview)
+
+topmost_f.config( yscrollcommand=vbar.set)
+topmost_f.pack(side = LEFT , fill = "both" , expand = True)
 #=====================ENDS=================================
 
-heading_label = Label(win , text = "Detected Windows(2)", font = ("comic sans",20,"bold")).pack(side = TOP , expand = False , fill = X)
 
-topmost_frame = Frame(win, highlightbackground = "black", highlightthickness = 1 , bg = "red" )
-topmost_frame.pack( side = BOTTOM , expand = True , fill = BOTH)
+heading_label = Label(topmost_f , text = "Detected Windows", font = ("comic sans",20,"bold")).grid( row = 0 , column = 0 , sticky = "nw")
 
-#heading_label = Label(topmost_frame , text = "Detected Windows", font = ("comic sans",20,"bold")).pack()
-print(topmost_frame.pack_info())
 class Screen:
     def __init__(self,master,screen):
         self.master = master
@@ -21,28 +38,30 @@ class Screen:
     def build(self,row,column):
         print(row,column)
         self.f = Frame(self.master, highlightbackground = "black", highlightthickness = 1 )
+        self.f.grid(row = row, column = column ,sticky = "nsew" ,padx = 15 ,pady = 15 )
         
-        self.f.grid(row = row , column = column , padx = 60 , pady = 20 )
         
+        viewframe = Canvas(self.f, width = 480 , height = 270 , bg = "black")
+        self.image_id = viewframe.create_image((0,0) , image = img1,anchor = "nw")
+        viewframe.create_text(550, 250, text="1", fill="WHITE", font=('Helvetica 15 bold'))
+        viewframe.pack( fill = X , side = TOP  )
+        print("JJ:",self.f.cget("padx"),self.f.keys())
         
-        viewframe = Frame(self.f , bg = "red" , highlightbackground = "yellow", highlightthickness = 1)
-        viewframe.pack()
 
-        view_canvas = Canvas(viewframe ,  width = 500 , height = 300 ,bg = "#000000")
-        view_canvas.pack(side = TOP , expand = False , fill = BOTH)
+        
         
         
 
         toolframe = Frame(self.f,bg = "yellow", highlightbackground = "pink", highlightthickness = 5 )
-        toolframe.pack()
+        toolframe.pack(expand = True , fill = BOTH , side = BOTTOM)
 
         
-s = Screen(topmost_frame,"hey")
-s1 = Screen(topmost_frame, "heyoo")
-s2 = Screen(topmost_frame, "heyoo")
-#s3 = Screen(topmost_frame, "hi")
+s = Screen(topmost_f,"hey")
+s1 = Screen(topmost_f, "heyoo")
+s2 = Screen(topmost_f, "heyoo")
+s3 = Screen(topmost_f, "heyoo")
 s.build(1,0)
 s1.build(1,1)
-#s2.build(1,2)
-#s3.build(1,2)
+s2.build(1,2)
+s3.build(2,0)
 win.mainloop()        
