@@ -35,21 +35,18 @@ class Screen:
     def build(self,row,column):
         print(row,column)
         self.f = Frame(self.master, highlightbackground = "black", highlightthickness = 1 )
-        self.f.rowconfigure(index = 0 , weight = 0 , uniform = "p")
-        self.f.rowconfigure(index = 1 , weight = 1, uniform = "p")
         self.f.grid(row = row, column = column ,sticky = "nsew" ,padx = 15  )
         
         
         viewframe = Frame(self.f , bg = "red" , highlightbackground = "yellow", highlightthickness = 1)
-        viewframe.grid(row = 0 , column = 0 ,sticky = "nsew")
+        viewframe.pack(expand = True , fill = BOTH , side = TOP)
 
-        view_canvas = Canvas(viewframe ,  width = 600 , height = 300 ,bg = "#000000")
-        view_canvas.pack(fill = "both" , expand = True)
+        
         
         
 
         toolframe = Frame(self.f,bg = "yellow", highlightbackground = "pink", highlightthickness = 5 )
-        toolframe.grid(row = 1 , column = 0)
+        toolframe.pack(expand = True , fill = BOTH , side = BOTTOM)
 
         
 s = Screen(topmost_f,"hey")
