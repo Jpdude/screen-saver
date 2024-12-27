@@ -6,7 +6,7 @@ img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\
 img = img.resize((480,270))
 img1 = ImageTk.PhotoImage(img)
 
-topmost_f = Canvas(win, highlightbackground = "red", highlightthickness = 1 ,scrollregion=(0,0,500,500))
+topmost_f = Canvas(win, highlightbackground = "red", highlightthickness = 1 ,scrollregion=(0,0,500,500) , bg = "white")
 # for x in y.windows():
 #   f.columnfigure(index = x , weight = 1 )
 
@@ -35,22 +35,25 @@ class Screen:
         self.master = master
         self.screen = screen
     def poop(self,x,y,z):
-            print("poop:",self.typa.get(),y,z)
+            print("poop:",self.typa.get(),y,z,self.master.grid_slaves())
+            if self.typa.get() == "Time":
+                #self.toolFrameTime.pack()
+                ...
     def build(self,row,column):
         print(row,column)
         self.f = Frame(self.master, highlightbackground = "black", highlightthickness = 1 )
-        self.f.grid(row = row, column = column ,sticky = "nsew" ,padx = 15 ,pady = 15 )
+        self.f.grid(row = row, column = column ,sticky = "ns" ,padx = 15 ,pady = 15 )
         
         
         viewframe = Canvas(self.f, width = 480 , height = 270 , bg = "black")
         self.image_id = viewframe.create_image((0,0) , image = img1,anchor = "nw")
         viewframe.create_text(550, 250, text="1", fill="WHITE", font=('Helvetica 15 bold'))
         viewframe.pack( fill = X , side = TOP  )
-        print("JJ:",self.f.cget("padx"),self.f.keys())
+        print("JJ:",viewframe.cget("width"),viewframe.keys(),self.f.bbox())
         
 
         
-        opt = ["Time" , "Pictures"]
+        opt = ["Time" ,"Pictures","Music"]
         self.typa = StringVar()
         self.typa.set(opt[0])
         
@@ -64,10 +67,18 @@ class Screen:
 
         self.typa.trace("w",self.poop)
         
-##        #for the time choice 
-##        toolframe = Frame(self.f,bg = "yellow", highlightbackground = "pink", highlightthickness = 5 )
-##        toolframe.pack(expand = True , fill = BOTH , side = BOTTOM)
-##
+        #for the time choice 
+        #self.toolFrameTime = Frame(toolframe,bg = "white", highlightbackground = "pink", highlightthickness = 5 )
+        
+        time_config = Label(self.f, text = "1" , font=('Helvetica 5 bold'))
+        time_config.pack(pady = (5))
+
+##        self.toolFrameTime = Frame(toolframe,bg = "white", highlightbackground = "pink", highlightthickness = 5 )
+##        
+##        time_config = Label(self.toolFrameTime, text = "Time Configuration" , font=('Helvetica 5 bold'))
+##        time_config.pack()
+        
+
 ##        #for the pictures choice
 ##        toolframe = Frame(self.f,bg = "yellow", highlightbackground = "pink", highlightthickness = 5 )
 ##        toolframe.pack(expand = True , fill = BOTH , side = BOTTOM)
