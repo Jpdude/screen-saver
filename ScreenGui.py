@@ -2,7 +2,7 @@ from tkinter import *
 win = Tk()
 win.title("Window Manager")
 from PIL import Image , ImageTk
-img = Image.open("poo2.jpg")
+img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper")
 img = img.resize((480,270))
 img1 = ImageTk.PhotoImage(img)
 
@@ -34,7 +34,8 @@ class Screen:
     def __init__(self,master,screen):
         self.master = master
         self.screen = screen
-
+    def poop(self,x,y,z):
+            print("poop:",self.typa.get(),y,z)
     def build(self,row,column):
         print(row,column)
         self.f = Frame(self.master, highlightbackground = "black", highlightthickness = 1 )
@@ -49,11 +50,27 @@ class Screen:
         
 
         
+        opt = ["Time" , "Pictures"]
+        self.typa = StringVar()
+        self.typa.set(opt[0])
         
         
-
+        
         toolframe = Frame(self.f,bg = "yellow", highlightbackground = "pink", highlightthickness = 5 )
         toolframe.pack(expand = True , fill = BOTH , side = BOTTOM)
+
+        drop = OptionMenu(toolframe , self.typa , *opt)
+        drop.pack(anchor = "nw")
+
+        self.typa.trace("w",self.poop)
+        
+##        #for the time choice 
+##        toolframe = Frame(self.f,bg = "yellow", highlightbackground = "pink", highlightthickness = 5 )
+##        toolframe.pack(expand = True , fill = BOTH , side = BOTTOM)
+##
+##        #for the pictures choice
+##        toolframe = Frame(self.f,bg = "yellow", highlightbackground = "pink", highlightthickness = 5 )
+##        toolframe.pack(expand = True , fill = BOTH , side = BOTTOM)
 
         
 s = Screen(topmost_f,"hey")
