@@ -1,13 +1,15 @@
 from tkinter import *
 from tkinter import filedialog as fd
+from screeninfo import get_monitors
 win = Tk()
 win.title("Window Manager")
 from PIL import Image , ImageTk
 img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper")
 img = img.resize((480,270))
 img1 = ImageTk.PhotoImage(img)
-
-topmost_f = Canvas(win, highlightbackground = "red", highlightthickness = 1 ,scrollregion=(0,0,500,500) , bg = "white")
+topmost_c = Canvas(win, highlightbackground = "red", highlightthickness = 1  , bg = "white")
+topmost_c.pack(side = LEFT , fill = "both" , expand = True)
+topmost_f = Frame(win, highlightbackground = "green", highlightthickness = 1  , bg = "white")
 # for x in y.windows():
 #   f.columnfigure(index = x , weight = 1 )
 
@@ -18,23 +20,34 @@ topmost_f.columnconfigure(index = 2 , weight = 1 , uniform ="u")
 
 topmost_f.rowconfigure(index = 0 , weight = 1 , uniform ="u")
 topmost_f.rowconfigure(index = 1 , weight = 10 , uniform ="u")
-topmost_f.rowconfigure(index = 2 , weight = 1 , uniform ="u")
+topmost_f.rowconfigure(index = 2 , weight = 10 , uniform ="u")
 
-vbar=Scrollbar(win,orient=VERTICAL)
+vbar=Scrollbar(win,orient=VERTICAL , command=topmost_c.yview)
 vbar.pack(side=RIGHT,fill=Y)
-vbar.config(command=topmost_f.yview)
 
-topmost_f.config( yscrollcommand=vbar.set)
-topmost_f.pack(side = LEFT , fill = "both" , expand = True)
+#topmost_f.pack(side = LEFT , fill = "both" , expand = True)
+
+
+topmost_c.config( yscrollcommand=vbar.set)
+topmost_c.bind('<Configure>', lambda e : topmost_c.configure(scrollregion = topmost_c.bbox('all')))
+
+topmost_c.create_window((0,0),window = topmost_f, anchor = 'nw', width =1920)
 #=====================ENDS=================================
 
 
 heading_label = Label(topmost_f , text = "Detected Windows", font = ("comic sans",20,"bold")).grid( row = 0 , column = 0 , sticky = "nw")
 
+def mousewheel(event):
+    topmost_c.yview("scroll",int(-1*(event.delta/120)),"units")
+    print("qegfeh",topmost_c.bbox('all'))
+    topmost_c.configure(scrollregion = topmost_c.bbox('all'))
+    return "break"
+topmost_c.bind_all("<MouseWheel>", mousewheel)
 class Screen:
-    def __init__(self,master,screen):
+    def __init__(self,master,screen,last = ""):
         self.master = master
         self.screen = screen
+        self.last = last
 
     def revealrl(self):
         print("jodfnojhnd")
@@ -75,8 +88,11 @@ class Screen:
     def build(self,row,column):
         print(row,column)
         self.f = Frame(self.master, highlightbackground = "black", highlightthickness = 1 )
-        self.f.grid(row = row, column = column ,sticky = "ns" ,padx = 15 ,pady = 15 )
-        
+        if self.last == "":
+            self.f.grid(row = row, column = column ,sticky = "n" ,padx = 15 ,pady = 15  )
+        else:
+            self.f.grid(row = row, column = column ,sticky = "n" ,padx = 15 ,pady = 15,rowspan = 100  )
+            
         
         viewframe = Canvas(self.f, width = 480 , height = 270 , bg = "black")
         self.image_id = viewframe.create_image((0,0) , image = img1,anchor = "nw")
@@ -241,7 +257,7 @@ class Screen:
 s = Screen(topmost_f,"hey")
 s1 = Screen(topmost_f, "heyoo")
 s2 = Screen(topmost_f, "heyoo")
-s3 = Screen(topmost_f, "heyoo")
+s3 = Screen(topmost_f, "heyoo",last = "adg")
 s.build(1,0)
 s1.build(1,1)
 s2.build(1,2)
