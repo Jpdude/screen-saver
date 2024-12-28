@@ -1,25 +1,30 @@
 from tkinter import *
 from tkinter import filedialog as fd
 from screeninfo import get_monitors
+from scrollable import ScrollableFrame
+from PIL import Image , ImageTk
+
 win = Tk()
 win.title("Window Manager")
-from PIL import Image , ImageTk
+
 img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper")
 img = img.resize((480,270))
 img1 = ImageTk.PhotoImage(img)
 
-topmost_f = ScrollableFrame(win)
+topmost_f = ScrollableFrame(win , bg_color = "white")
 # for x in y.windows():
 #   f.columnfigure(index = x , weight = 1 )
 
 # Where I configured the grid layout of the topmost frame
 topmost_f.columnconfigure(index = 0 , weight = 1 , uniform ="u")
-topmost_f.columnconfigure(index = 1 , weight = 1 , uniform ="u")
-topmost_f.columnconfigure(index = 2 , weight = 1 , uniform ="u")
+
+
 
 topmost_f.rowconfigure(index = 0 , weight = 1 , uniform ="u")
-topmost_f.rowconfigure(index = 1 , weight = 10 , uniform ="u")
-topmost_f.rowconfigure(index = 2 , weight = 1 , uniform ="u")
+
+##for x in range(0,100):
+##    topmost_f.rowconfigure(index = x+1 , weight = 5 , uniform ="u")
+
 
 
 
@@ -28,15 +33,14 @@ topmost_f.pack(side = LEFT , fill = "both" , expand = True)
 #=====================ENDS=================================
 
 
-heading_label = Label(topmost_f , text = "Detected Windows", font = ("comic sans",20,"bold")).grid( row = 0 , column = 0 , sticky = "nw")
+heading_label = Label(topmost_f , text = "Detected Windows", font = ("comic sans",20,"bold") , bg = "#ffffff").grid( row = 0 , column = 0 , sticky = "nw")
 
 
 class Screen:
-    def __init__(self,master,screen,last = ""):
+    def __init__(self,master,screen):
         self.master = master
         self.screen = screen
-        self.last = last
-
+        
     def revealrl(self):
         print("jodfnojhnd")
         if self.roulette_ckbtn_var.get() == 1:
@@ -76,10 +80,8 @@ class Screen:
     def build(self,row,column):
         print(row,column)
         self.f = Frame(self.master, highlightbackground = "black", highlightthickness = 1 )
-        if self.last == "":
-            self.f.grid(row = row, column = column ,sticky = "n" ,padx = 15 ,pady = 15  )
-        else:
-            self.f.grid(row = row, column = column ,sticky = "n" ,padx = 15 ,pady = 15,rowspan = 100  )
+        self.f.grid(row = row, column = column ,sticky = "n" ,padx = 15 ,pady = 15  )
+        
             
         
         viewframe = Canvas(self.f, width = 480 , height = 270 , bg = "black")
@@ -241,13 +243,34 @@ class Screen:
 ##        toolframe = Frame(self.f,bg = "yellow", highlightbackground = "pink", highlightthickness = 5 )
 ##        toolframe.pack(expand = True , fill = BOTH , side = BOTTOM)
 
-        
-s = Screen(topmost_f,"hey")
-s1 = Screen(topmost_f, "heyoo")
-s2 = Screen(topmost_f, "heyoo")
-s3 = Screen(topmost_f, "heyoo",last = "adg")
-s.build(1,0)
-s1.build(1,1)
-s2.build(1,2)
-s3.build(2,0)
+q = 0
+y = 1
+z = 0
+for x in range(0,10):
+    s = Screen(topmost_f,x)
+    s = Screen(topmost_f,x)
+    z = q % 3
+    if z == 0:
+        y = (q/3) +1
+    q+=1
+    y = int(y)
+    z = int(z)
+    topmost_f.rowconfigure(index = y , weight = 5 )
+    if y < 3:
+        topmost_f.columnconfigure(index = y , weight = 1 , uniform ="u")
+    s.build(y,z)
+
+##for x in (range,len(get_monitors())):
+##    z = x % 3
+##    if z == 0:
+##        y = (x/3) +1  
+    
+##s = Screen(topmost_f,"hey")
+##s1 = Screen(topmost_f, "heyoo")
+##s2 = Screen(topmost_f, "heyoo")
+##s3 = Screen(topmost_f, "heyoo",last = "adg")
+##s.build(1,0)
+##s1.build(1,1)
+##s2.build(1,2)
+##s3.build(2,0)
 win.mainloop()        
