@@ -7,9 +7,8 @@ from PIL import Image , ImageTk
 img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper")
 img = img.resize((480,270))
 img1 = ImageTk.PhotoImage(img)
-topmost_c = Canvas(win, highlightbackground = "red", highlightthickness = 1  , bg = "white")
-topmost_c.pack(side = LEFT , fill = "both" , expand = True)
-topmost_f = Frame(win, highlightbackground = "green", highlightthickness = 1  , bg = "white")
+
+topmost_f = ScrollableFrame(win)
 # for x in y.windows():
 #   f.columnfigure(index = x , weight = 1 )
 
@@ -20,29 +19,18 @@ topmost_f.columnconfigure(index = 2 , weight = 1 , uniform ="u")
 
 topmost_f.rowconfigure(index = 0 , weight = 1 , uniform ="u")
 topmost_f.rowconfigure(index = 1 , weight = 10 , uniform ="u")
-topmost_f.rowconfigure(index = 2 , weight = 10 , uniform ="u")
-
-vbar=Scrollbar(win,orient=VERTICAL , command=topmost_c.yview)
-vbar.pack(side=RIGHT,fill=Y)
-
-#topmost_f.pack(side = LEFT , fill = "both" , expand = True)
+topmost_f.rowconfigure(index = 2 , weight = 1 , uniform ="u")
 
 
-topmost_c.config( yscrollcommand=vbar.set)
-topmost_c.bind('<Configure>', lambda e : topmost_c.configure(scrollregion = topmost_c.bbox('all')))
 
-topmost_c.create_window((0,0),window = topmost_f, anchor = 'nw', width =1920)
+#topmost_f.config( yscrollcommand=vbar.set)
+topmost_f.pack(side = LEFT , fill = "both" , expand = True)
 #=====================ENDS=================================
 
 
 heading_label = Label(topmost_f , text = "Detected Windows", font = ("comic sans",20,"bold")).grid( row = 0 , column = 0 , sticky = "nw")
 
-def mousewheel(event):
-    topmost_c.yview("scroll",int(-1*(event.delta/120)),"units")
-    print("qegfeh",topmost_c.bbox('all'))
-    topmost_c.configure(scrollregion = topmost_c.bbox('all'))
-    return "break"
-topmost_c.bind_all("<MouseWheel>", mousewheel)
+
 class Screen:
     def __init__(self,master,screen,last = ""):
         self.master = master
