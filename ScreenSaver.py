@@ -27,7 +27,7 @@ def full(self):
         t.attributes('-fullscreen',True)
         win.geometry("300x322-1959+0")
         
-win = Tk(screenName = ":0.2")
+##win = Tk(screenName = ":0.2")
 
 
 ##print(win.winfo_screen())
@@ -166,14 +166,14 @@ class Display:
 
             
         
-y = get_monitors()
-print(y)
-x = Display(win,y[2])
-x.create()
-
-z = Display(win,y[1],typeof = "P")
-z.create()
-win.mainloop()       
+##y = get_monitors()
+##print(y)
+##x = Display(win,y[2])
+##x.create()
+##
+##z = Display(win,y[1],typeof = "P")
+##z.create()
+##win.mainloop()       
 
 #Windows wallpaper
 #img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper")

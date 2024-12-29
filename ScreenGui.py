@@ -3,10 +3,11 @@ from tkinter import filedialog as fd
 from screeninfo import get_monitors
 from scrollable import ScrollableFrame
 from PIL import Image , ImageTk
-
+from ScreenSaver import Display
 win = Tk()
 win.title("Window Manager")
 
+#default image
 img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper")
 img = img.resize((480,270))
 img1 = ImageTk.PhotoImage(img)
@@ -63,7 +64,9 @@ class Screen:
             filetypes = ft,
             )
         self.current_static_pic.set(fname)
-        
+
+    def initiate(self):
+        ...
     def build(self,row,column):
         print(row,column)
         self.f = Frame(self.master, highlightbackground = "black", highlightthickness = 1 , bg = "white")
@@ -104,7 +107,10 @@ class Screen:
         toolframe.pack(expand = True , fill = BOTH , side = BOTTOM)
 
         drop = OptionMenu(toolframe , self.typa , *opt)
-        drop.pack(anchor = "nw")
+        drop.place(x = 0, y = 0)
+
+        init = Button(toolframe , text = "Initiate" , command = self.initiate)
+        init.pack(anchor = "ne")
 
         self.typa.trace("w",self.poop)
         
@@ -249,25 +255,4 @@ for x in get_monitors():
     s.build(y,z)
     q+=1
 
-##for x in (range(len(get_monitors()))):
-##    s = Screen(topmost_f,x)
-##    s = Screen(topmost_f,x)
-##    z = x % 3
-##    if z == 0:
-##        y = (x/3) +1
-##    y = int(y)
-##    z = int(z)
-##    topmost_f.rowconfigure(index = y , weight = 5 )
-##    if y < 3:
-##        topmost_f.columnconfigure(index = x , weight = 1 , uniform ="u")
-##    s.build(y,z)
-    
-##s = Screen(topmost_f,"hey")
-##s1 = Screen(topmost_f, "heyoo")
-##s2 = Screen(topmost_f, "heyoo")
-##s3 = Screen(topmost_f, "heyoo",last = "adg")
-##s.build(1,0)
-##s1.build(1,1)
-##s2.build(1,2)
-##s3.build(2,0)
 win.mainloop()        
