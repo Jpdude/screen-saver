@@ -5,6 +5,9 @@ import time
 from datetime import datetime
 from screeninfo import get_monitors
 import pyautogui
+import pymonctl as pmc
+import win32gui
+#print(pmc.getAllMonitors()[2].position)
 print(datetime.now().minute)
 Directory = os.getcwd()
 print('Directoy:',Directory)
@@ -69,7 +72,8 @@ class Display:
 
     def create(self):
         self.t = Toplevel(self.master,bg = "black")
-        self.t.title("PooPz")
+        self.t.geometry(f"{self.display.width}x{self.display.height}+{self.display.x}+{self.display.y}")
+        self.t.title("Screen"+self.display.name[-1])
         self.t.bind("f",self.full)
         if self.typeof == "PIC":
             self.t["bg"] = "black"
@@ -102,7 +106,7 @@ class Display:
 
 
             self.roulette()
-        
+            
     def gen_image(self,n,strech = True):
         if self.pic == 0:
             img = Image.open(pic_list[n])
@@ -137,20 +141,27 @@ class Display:
         if self.time == 0:
             self.time = time.time()
         return time.time() - self.time
-    
+
+    def enumHandler(self,hwnd, lParam):
+        if win32gui.IsWindowVisible(hwnd):
+            if f'Screen{self.display.name[-1]}' in win32gui.GetWindowText(hwnd):
+                win32gui.MoveWindow(hwnd, self.display.x, 0, self.display.width, self.display.height, True)
+
     def full(self,key):
         if self.t.attributes('-fullscreen'):
             self.t.attributes('-fullscreen',False)  
         else:
             self.t.attributes('-fullscreen',True)
 
-        print(self.display.x)
-        if self.display.x > 0 or self.display.y > 0:
-            pyautogui.hotkey('shift','win', 'left', interval=0.1)
-        elif self.display.x < 0 or self.display.y < 0:
-            pyautogui.hotkey('shift', 'win', 'right', interval=0.1)
-        else:
-            pass
+        win32gui.EnumWindows(self.enumHandler, None)
+    
+##        print(self.display.x)
+##        if self.display.x > 0 or self.display.y > 0:
+##            pyautogui.hotkey('shift','win', 'left', interval=0.1)
+##        elif self.display.x < 0 or self.display.y < 0:
+##            pyautogui.hotkey('shift', 'win', 'right', interval=0.1)
+##        else:
+##            pass
 
 
             

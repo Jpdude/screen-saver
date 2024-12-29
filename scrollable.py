@@ -5,7 +5,7 @@ import sys
 
 class ScrollableFrame(tkinter.Frame):
     """Adaptation of TomSchimansky CTkScrollableFrame logic, but in 'plain' tkinter"""
-    def __init__(self, master, width: int = 200, height: int = 200, border_width=None,
+    def __init__(self, master, width: int = 700, height: int = 700, border_width=None,
                  bg_color=None, fg_color=None, border_color=None,
                  scrollbar_fg_color=None, scrollbar_button_color=None, scrollbar_button_hover_color=None,
                  label_fg_color=None, label_text_color=None, label_text: str = "", label_font=None,

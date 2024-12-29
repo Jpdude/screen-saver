@@ -12,28 +12,14 @@ img = img.resize((480,270))
 img1 = ImageTk.PhotoImage(img)
 
 topmost_f = ScrollableFrame(win , bg_color = "white")
-# for x in y.windows():
-#   f.columnfigure(index = x , weight = 1 )
-
 # Where I configured the grid layout of the topmost frame
-topmost_f.columnconfigure(index = 0 , weight = 1 , uniform ="u")
-
-
-
-topmost_f.rowconfigure(index = 0 , weight = 1 , uniform ="u")
-
-##for x in range(0,100):
-##    topmost_f.rowconfigure(index = x+1 , weight = 5 , uniform ="u")
-
-
-
+#topmost_f.columnconfigure(index = 0 , weight = 1 , uniform ="u")
 
 #topmost_f.config( yscrollcommand=vbar.set)
 topmost_f.pack(side = LEFT , fill = "both" , expand = True)
 #=====================ENDS=================================
 
-
-heading_label = Label(topmost_f , text = "Detected Windows", font = ("comic sans",20,"bold") , bg = "#ffffff").grid( row = 0 , column = 0 , sticky = "nw")
+heading_label = Label(topmost_f , text = f"Detected Windows ({len(get_monitors())})", font = ("comic sans",20,"bold") , bg = "#ffffff").grid( row = 0 , column = 0 , sticky = "nw")
 
 
 class Screen:
@@ -41,8 +27,8 @@ class Screen:
         self.master = master
         self.screen = screen
         
+        
     def revealrl(self):
-        print("jodfnojhnd")
         if self.roulette_ckbtn_var.get() == 1:
             for child in self.static_frameholder.winfo_children():
                 child.configure(state = "disabled")
@@ -77,19 +63,21 @@ class Screen:
             filetypes = ft,
             )
         self.current_static_pic.set(fname)
+        
     def build(self,row,column):
         print(row,column)
-        self.f = Frame(self.master, highlightbackground = "black", highlightthickness = 1 )
+        self.f = Frame(self.master, highlightbackground = "black", highlightthickness = 1 , bg = "white")
         self.f.grid(row = row, column = column ,sticky = "n" ,padx = 15 ,pady = 15  )
         
             
         
-        viewframe = Canvas(self.f, width = 480 , height = 270 , bg = "black")
+        viewframe = Canvas(self.f, width = 480 , height = 270 , bg = "grey" , relief = "flat")
         self.image_id = viewframe.create_image((0,0) , image = img1,anchor = "nw")
-        #viewframe.create_text(550, 250, text="1", fill="WHITE", font=('Helvetica 15 bold'))
         viewframe.pack( fill = X , side = TOP  )
-        print("JJ:",viewframe.cget("width"),viewframe.keys(),self.f.bbox())
-        win_no = Label(self.f, text = "1" , font=('Helvetica 10 bold'))
+
+        win_no = Label(self.f, text = self.screen.name[-1] , font=('Helvetica 10 bold'), bg = "white")
+        if self.screen.is_primary:
+            win_no = Label(self.f, text = "MAIN" , font=('Helvetica 10 bold'), bg = "white")
         win_no.pack(pady = (5))
         #-------------------------------------TIME-----------------------------------------------
         #-------------------------------------TIME-----------------------------------------------
@@ -112,7 +100,7 @@ class Screen:
         self.temp.set(opt_templates[0])
         #--------------------END----------------------------
         
-        toolframe = Frame(self.f,bg = "#ffffff", highlightbackground = "pink", highlightthickness = 5 )
+        toolframe = Frame(self.f,bg = "#ffffff", highlightbackground = "grey", highlightthickness = 2 )
         toolframe.pack(expand = True , fill = BOTH , side = BOTTOM)
 
         drop = OptionMenu(toolframe , self.typa , *opt)
@@ -246,24 +234,33 @@ class Screen:
 q = 0
 y = 1
 z = 0
-for x in range(0,10):
+for x in get_monitors():
     s = Screen(topmost_f,x)
     s = Screen(topmost_f,x)
     z = q % 3
     if z == 0:
         y = (q/3) +1
-    q+=1
+    
     y = int(y)
     z = int(z)
     topmost_f.rowconfigure(index = y , weight = 5 )
     if y < 3:
-        topmost_f.columnconfigure(index = y , weight = 1 , uniform ="u")
+        topmost_f.columnconfigure(index = q , weight = 1 , uniform ="u")
     s.build(y,z)
+    q+=1
 
-##for x in (range,len(get_monitors())):
+##for x in (range(len(get_monitors()))):
+##    s = Screen(topmost_f,x)
+##    s = Screen(topmost_f,x)
 ##    z = x % 3
 ##    if z == 0:
-##        y = (x/3) +1  
+##        y = (x/3) +1
+##    y = int(y)
+##    z = int(z)
+##    topmost_f.rowconfigure(index = y , weight = 5 )
+##    if y < 3:
+##        topmost_f.columnconfigure(index = x , weight = 1 , uniform ="u")
+##    s.build(y,z)
     
 ##s = Screen(topmost_f,"hey")
 ##s1 = Screen(topmost_f, "heyoo")
