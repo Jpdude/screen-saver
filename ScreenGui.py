@@ -8,8 +8,9 @@ import time
 import math
 win = Tk()
 win.title("Window Manager")
-size = ((get_monitors()[0].width)/math.gcd(get_monitors()[0].width,get_monitors()[0].height),(get_monitors()[0].height)/math.gcd(get_monitors()[0].width,get_monitors()[0].height))
-print(size)
+scale = 35
+size = (int((get_monitors()[0].width)/math.gcd(get_monitors()[0].width,get_monitors()[0].height))*scale,int((get_monitors()[0].height)/math.gcd(get_monitors()[0].width,get_monitors()[0].height))*scale)
+print(size,math.gcd(get_monitors()[0].width,get_monitors()[0].height))
 #default image
 img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper")
 img = img.resize(size)
