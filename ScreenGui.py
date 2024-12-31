@@ -8,12 +8,10 @@ import time
 import math
 win = Tk()
 win.title("Window Manager")
-scale = 35
-size = (int((get_monitors()[0].width)/math.gcd(get_monitors()[0].width,get_monitors()[0].height))*scale,int((get_monitors()[0].height)/math.gcd(get_monitors()[0].width,get_monitors()[0].height))*scale)
-print(size,math.gcd(get_monitors()[0].width,get_monitors()[0].height))
+size = ((get_monitors()[0].width),(get_monitors()[0].height)/math.gcd(get_monitors()[0].width,get_monitors()[0].height))
 #default image
 img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper")
-img = img.resize(size)
+img = img.resize((480,270))
 img1 = ImageTk.PhotoImage(img)
 
 topmost_f = ScrollableFrame(win , bg_color = "white")
@@ -111,7 +109,7 @@ class Screen:
         
             
         
-        viewframe = Canvas(self.f, width = size[0] , height = size[1] , bg = "grey" , relief = "flat")
+        viewframe = Canvas(self.f, width = 480 , height = 270 , bg = "grey" , relief = "flat")
         self.image_id = viewframe.create_image((0,0) , image = img1,anchor = "nw")
         viewframe.pack( fill = X , side = TOP  )
 
