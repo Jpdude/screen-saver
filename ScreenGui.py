@@ -4,12 +4,15 @@ from screeninfo import get_monitors
 from scrollable import ScrollableFrame
 from PIL import Image , ImageTk
 from ScreenSaver import Display
+import time
+import math
 win = Tk()
 win.title("Window Manager")
-
+size = ((get_monitors()[0].width)/math.gcd(get_monitors()[0].width,get_monitors()[0].height),(get_monitors()[0].height)/math.gcd(get_monitors()[0].width,get_monitors()[0].height))
+print(size)
 #default image
 img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper")
-img = img.resize((480,270))
+img = img.resize(size)
 img1 = ImageTk.PhotoImage(img)
 
 topmost_f = ScrollableFrame(win , bg_color = "white")
@@ -64,9 +67,42 @@ class Screen:
             filetypes = ft,
             )
         self.current_static_pic.set(fname)
-
+        
+    def get_time(self):
+        if self.dis.getTime():
+            self.current_time["text"] = self.dis.getTime()
+            self.sess = self.master.after(100,self.get_time)
+        
+    def deinitiate(self):
+        try:
+            self.dis.destroy()
+            self.master.after_cancel(self.sess)
+        except AttributeError:
+            pass
+        
     def initiate(self):
-        ...
+        print(self.typa.get())
+        try:
+            self.dis.destroy()
+        except :
+            pass
+        if self.typa.get() == "Time":
+            self.dis = Display(win , self.screen,typeof = "Counter")
+            self.dis.create()
+            win.update_idletasks()
+            self.dis.full("f")
+            self.get_time()
+        elif self.typa.get() == "Pictures":
+            print("asdgh",self.roulette_ckbtn_var)
+            if self.roulette_ckbtn_var.get() == 0:
+                self.dis = Display(win , self.screen , typeof = "PIC" , pic = self.current_static_pic.get() )
+            else:
+                self.dis = Display(win , self.screen , typeof = "PIC" , pic = 0 , dire = self.current_dir.get() ,inter = self.current_interval.get())
+
+            self.dis.create()
+            win.update_idletasks()
+            self.dis.full("f")
+        
     def build(self,row,column):
         print(row,column)
         self.f = Frame(self.master, highlightbackground = "black", highlightthickness = 1 , bg = "white")
@@ -74,7 +110,7 @@ class Screen:
         
             
         
-        viewframe = Canvas(self.f, width = 480 , height = 270 , bg = "grey" , relief = "flat")
+        viewframe = Canvas(self.f, width = size[0] , height = size[1] , bg = "grey" , relief = "flat")
         self.image_id = viewframe.create_image((0,0) , image = img1,anchor = "nw")
         viewframe.pack( fill = X , side = TOP  )
 
@@ -87,8 +123,10 @@ class Screen:
         #-------------------------------------TIME-----------------------------------------------
 
         #--------------All Vars and options for option menus-------
-        self.current_time = StringVar()
-        self.current_time.set("5:30.23")
+##        self.current_time = StringVar()
+##        self.current_time.set("5:30.23")
+        self.set_time = StringVar()
+        self.set_time.set("0:00.00")
 
         opt = ["Please Choose Type","Time" ,"Pictures","Music"]
         self.typa = StringVar()
@@ -112,6 +150,10 @@ class Screen:
         init = Button(toolframe , text = "Initiate" , command = self.initiate)
         init.pack(anchor = "ne")
 
+        deinit = Button(toolframe , text = "Deinitiate" , command = self.deinitiate)
+        deinit.pack(anchor = "ne")
+        
+
         self.typa.trace("w",self.poop)
         
         #for the time choice 
@@ -126,15 +168,15 @@ class Screen:
         drop_time_zone = OptionMenu(time_config , self.typa_time , *opt_time_zone)
         drop_time_zone.pack()
         
-        current_time = Label(time_config, text="Current Time: 5:00", bg = "#ffffff")  
-        current_time.pack()  
+        self.current_time = Label(time_config, text = "5:00", bg = "#ffffff")  
+        self.current_time.pack()  
         #-------------------------------------------------------------------------------------
 
         #-------------------------------------------------------------------------------------
         types = LabelFrame(self.toolFrameTime, text = "Types", bg = "#ffffff" )
         types.pack(padx=(0,20))
 
-        corner_time = Entry(types, bg = "#ffffff" , width = 7 , textvariable = self.current_time , relief = "flat" )  
+        corner_time = Entry(types, bg = "#ffffff" , width = 7 , textvariable = self.set_time , relief = "flat" )  
         corner_time.pack(anchor = "ne" , padx = (0,5), pady = (0,5))
         
         ar1 = Frame(types, bg = "#ffffff")
@@ -183,6 +225,7 @@ class Screen:
         #--------------All Vars and options for option menus-------
         self.current_static_pic = StringVar()
         self.current_interval = IntVar()
+        self.current_interval.set(20)
         self.current_dir = StringVar()
 
         optPic = ["Please Choose Template","Time" ,"Pictures","Music"]
@@ -210,7 +253,7 @@ class Screen:
 
 
         self.roulette_optLblFrm = LabelFrame(self.toolFramePic, bg = "#ffffff")
-        
+        self.picInfo_optLblFrm = LabelFrame(self.toolFramePic, bg = "#ffffff")
         
         rlbls = ['Interval' , "Directory" , "Templates"]
         x = 0
@@ -241,7 +284,6 @@ q = 0
 y = 1
 z = 0
 for x in get_monitors():
-    s = Screen(topmost_f,x)
     s = Screen(topmost_f,x)
     z = q % 3
     if z == 0:

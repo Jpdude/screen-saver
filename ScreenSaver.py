@@ -7,17 +7,12 @@ from screeninfo import get_monitors
 import pyautogui
 import pymonctl as pmc
 import win32gui
-#print(pmc.getAllMonitors()[2].position)
+#print("rt",pmc.getAllMonitors()[2].setBrightness(30))
 print(datetime.now().minute)
 Directory = os.getcwd()
 print('Directoy:',Directory)
-pic_list = []
-for path , dirs , files in os.walk(Directory):
-    pic_no = 0
-    for x in files:
-        if x.endswith(".jpg") == True or x.endswith(".png") == True or x.endswith(".jpeg") == True or x.endswith(".JPG") == True:
-            pic_no += 1
-            pic_list.append(str(x))
+
+            
 def full(self):
     if win.attributes('-fullscreen'):
         win.attributes('-fullscreen',False)
@@ -27,8 +22,7 @@ def full(self):
         t.attributes('-fullscreen',True)
         win.geometry("300x322-1959+0")
         
-##win = Tk(screenName = ":0.2")
-
+#win = Tk(screenName = ":0.2")
 
 ##print(win.winfo_screen())
 ##win.title("{POOP")
@@ -59,24 +53,29 @@ def full(self):
 
 
 class Display:
-    def __init__(self,master,display,pic = 0,typeof = "PIC"):
+    def __init__(self,master,display,pic = 0,typeof = "PIC",dire = 0, inter = 20):
         self.master = master
         self.pic = pic
         self.display = display
         self.typeof = typeof.upper()
         self.time = 0
         self.picn = 0
-        self.change_time = 2
-
+        self.change_time = inter
+        self.dire = dire
+        
 
 
     def create(self):
+        print("rggsi9hg",self.pic,self.dire)
         self.t = Toplevel(self.master,bg = "black")
         self.t.geometry(f"{self.display.width}x{self.display.height}+{self.display.x}+{self.display.y}")
         self.t.title("Screen"+self.display.name[-1])
         self.t.bind("f",self.full)
+        
         if self.typeof == "PIC":
             self.t["bg"] = "black"
+            if self.dire != 0:
+                self.get_pic_list()
             self.can_1 = Canvas(self.t, width = self.display.width , height = self.display.height,bg = "#000000")
             self.image_id = self.can_1.create_image((0,0) , image = self.gen_image(self.pic),anchor = "nw")
             self.can_1.pack(fill = "both",expand = True, ipadx = 0 , ipady = 0)
@@ -104,12 +103,31 @@ class Display:
             self.a = Label(self.t, text=f'{datetime.now().strftime("%p")}', font=('Consolas', 20, "bold",), fg="white",bg = "black") 
             self.a.grid(row = 1 , column = 2 , sticky = "ww")
 
-
-            self.roulette()
             
+            self.roulette()
+
+    def get_pic_list(self):
+        print("sdj")
+        self.pic_list = []
+        for path , dirs , files in os.walk(self.dire):
+            pic_no = 0
+            for x in files:
+                if x.endswith(".jpg") == True or x.endswith(".png") == True or x.endswith(".jpeg") == True or x.endswith(".JPG") == True:
+                    pic_no += 1
+                    self.pic_list.append(str(x))
+        
+    def destroy(self):
+        self.t.withdraw()
+        
+    def getTime(self):
+        try:
+            return self.h["text"]
+        except:
+            return None
+    
     def gen_image(self,n,strech = True):
         if self.pic == 0:
-            img = Image.open(pic_list[n])
+            img = Image.open(self.dire +'/'+self.pic_list[n])
         else:
             img = Image.open(n)
         
