@@ -5,13 +5,21 @@ from scrollable import ScrollableFrame
 from PIL import Image , ImageTk
 from ScreenSaver import Display
 import time
+import pymonctl as pmc
 import math
+from tkinter import messagebox
 win = Tk()
 win.title("Window Manager")
-size = ((get_monitors()[0].width),(get_monitors()[0].height)/math.gcd(get_monitors()[0].width,get_monitors()[0].height))
+wm = pmc.getAllMonitors()
+for x in wm:
+    print(x.frequency)
+print(wm)
+scale = 35
+size = (int((get_monitors()[0].width)/math.gcd(get_monitors()[0].width,get_monitors()[0].height))*scale,int((get_monitors()[0].height)/math.gcd(get_monitors()[0].width,get_monitors()[0].height))*scale)
+print(size,math.gcd(get_monitors()[0].width,get_monitors()[0].height))
 #default image
 img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper")
-img = img.resize((480,270))
+img = img.resize(size)
 img1 = ImageTk.PhotoImage(img)
 
 topmost_f = ScrollableFrame(win , bg_color = "white")
@@ -29,7 +37,22 @@ class Screen:
     def __init__(self,master,screen):
         self.master = master
         self.screen = screen
-        
+        self.pause_counter = 0
+        for x in wm:
+            if self.screen.name in x.name:
+                self.wm = x
+                print("twr",self.wm)
+                self.briDefault = self.wm.brightness
+                self.conDefault = self.wm.contrast
+    def btd(self):
+        self.wm.setBrightness(self.briDefault)
+        self.wm.setContrast(self.conDefault)
+        self.brightSclVar.set(self.briDefault)
+        self.contrSclVar.set(self.conDefault)
+    def updatebc(self,xtra):
+        self.wm.setBrightness(self.brightSclVar.get())
+        self.wm.setContrast(self.contrSclVar.get())
+
         
     def revealrl(self):
         if self.roulette_ckbtn_var.get() == 1:
@@ -43,19 +66,33 @@ class Screen:
             self.roulette_optLblFrm.pack_forget()
             
     def poop(self,x,y,z):
-        
+            try:
+                self.viewframe.delete(self.line_id_1)
+                self.viewframe.delete(self.line_id_2)
+                self.viewframe.delete(self.text_id)
+            except AttributeError:
+                pass
             self.toolFrameTime.pack_forget()
             self.toolFramePic.pack_forget()
-            
+            self.toolFrameSetts.pack_forget()
             if self.typa.get() == "Time":
                 self.toolFrameTime.pack(anchor = "nw", pady = 10 , padx = 10)
             elif self.typa.get() == "Pictures":
                 self.toolFramePic.pack(anchor = "nw", pady = 10 , padx = 10)
+            elif self.typa.get() == "Settings":
+                self.toolFrameSetts.pack(anchor = "nw", pady = 10 , padx = 10)
+                inch = int(math.pow(math.pow(self.screen.width_mm,2)+math.pow(self.screen.height_mm,2),0.5)/25.4)
+                print(inch)
+                self.line_id_1 = self.viewframe.create_line(0, 0, size[0]/2.5, size[1]/2.5 , width = 2  , fill="white")
+                self.line_id_2 = self.viewframe.create_line(size[0]/1.7, size[1]/1.7, size[0], size[1] , width = 2  , fill="white")
+                self.text_id = self.viewframe.create_text(size[0]/2, size[1]/2, text=f'{inch}"', fill="white", font=('Helvetica 15 bold'))
+                ...
+                
     #Note to self rmr to make these functions dynamic in the future ( opendir and openfile) like a variable is passed to them and they just pass on the path to the variable
     def opendir(self):
         
         fname = fd.askdirectory()
-        self.current_dir.set(fname)
+        self.current_loc.set(fname)
         
     def openfile(self):
 
@@ -65,8 +102,17 @@ class Screen:
             title = "open a file",
             filetypes = ft,
             )
-        self.current_static_pic.set(fname)
+        self.current_loc.set(fname)
         
+    def stop_cd(self):
+        if self.pause_counter % 2 == 0:
+            self.stopwatch_pu["text"] = "Unpause"
+            self.dis.tie.pause()
+        else:
+            self.stopwatch_pu["text"] = "Pause"
+            self.dis.tie.unpause()
+        self.pause_counter+=1
+            
     def get_time(self):
         if self.dis.getTime():
             self.current_time["text"] = self.dis.getTime()
@@ -74,33 +120,45 @@ class Screen:
         
     def deinitiate(self):
         try:
+            self.pause_counter = 0
+            self.dis.tie.destroy()
             self.dis.destroy()
             self.master.after_cancel(self.sess)
         except AttributeError:
             pass
         
-    def initiate(self):
+    def initiate(self,types =""):
         print(self.typa.get())
         try:
             self.dis.destroy()
         except :
             pass
         if self.typa.get() == "Time":
-            self.dis = Display(win , self.screen,typeof = "Counter")
+            print(self.set_time.get())
+            if types == "":
+                typee = "DF"
+            elif types == "Countdown":
+                typee = "CD"
+            elif types == "Timer":
+                typee = "TT"
+            self.dis = Display(win , self.screen,typeof = typee,dupObj = self,time = int(self.set_time.get()))
             self.dis.create()
             win.update_idletasks()
             self.dis.full("f")
             self.get_time()
         elif self.typa.get() == "Pictures":
-            print("asdgh",self.roulette_ckbtn_var)
-            if self.roulette_ckbtn_var.get() == 0:
-                self.dis = Display(win , self.screen , typeof = "PIC" , pic = self.current_static_pic.get() )
+            if self.current_loc.get() == "":
+                messagebox.showerror("Error","No Directory Selected")  
             else:
-                self.dis = Display(win , self.screen , typeof = "PIC" , pic = 0 , dire = self.current_dir.get() ,inter = self.current_interval.get())
+                print("asdgh",self.roulette_ckbtn_var)
+                if self.roulette_ckbtn_var.get() == 0:
+                    self.dis = Display(win , self.screen , typeof = "PIC" , pic = self.current_loc.get(),dupObj = self  )
+                else:
+                    self.dis = Display(win , self.screen , typeof = "PIC" , pic = 0 , dire = self.current_loc.get() ,inter = int(self.interval_ent.get()),dupObj = self)
 
-            self.dis.create()
-            win.update_idletasks()
-            self.dis.full("f")
+                self.dis.create()
+                win.update_idletasks()
+                self.dis.full("f")
         
     def build(self,row,column):
         print(row,column)
@@ -109,9 +167,9 @@ class Screen:
         
             
         
-        viewframe = Canvas(self.f, width = 480 , height = 270 , bg = "grey" , relief = "flat")
-        self.image_id = viewframe.create_image((0,0) , image = img1,anchor = "nw")
-        viewframe.pack( fill = X , side = TOP  )
+        self.viewframe = Canvas(self.f, width = size[0] , height = size[1] , bg = "grey" , relief = "flat")
+        self.image_id = self.viewframe.create_image((0,0) , image = img1,anchor = "nw")
+        self.viewframe.pack( fill = X , side = TOP  )
 
         win_no = Label(self.f, text = self.screen.name[-1] , font=('Helvetica 10 bold'), bg = "white")
         if self.screen.is_primary:
@@ -127,7 +185,7 @@ class Screen:
         self.set_time = StringVar()
         self.set_time.set("0:00.00")
 
-        opt = ["Please Choose Type","Time" ,"Pictures","Music"]
+        opt = ["Please Choose Type","Time" ,"Pictures","Music","Settings"]
         self.typa = StringVar()
         self.typa.set(opt[0])
 
@@ -175,22 +233,26 @@ class Screen:
         types = LabelFrame(self.toolFrameTime, text = "Types", bg = "#ffffff" )
         types.pack(padx=(0,20))
 
-        corner_time = Entry(types, bg = "#ffffff" , width = 7 , textvariable = self.set_time , relief = "flat" )  
+        corner_time = Spinbox(types, bg = "#ffffff" , width = 7 , textvariable = self.set_time , relief = "flat" ,from_=0, to=10000, increment=30)  
         corner_time.pack(anchor = "ne" , padx = (0,5), pady = (0,5))
         
         ar1 = Frame(types, bg = "#ffffff")
         ar1.pack()
         drop_time_zone = Label(ar1 , text="Stopwatch:", bg = "#ffffff").pack(side = LEFT)
 
-        stopwatch_btn = Button(ar1, text = "Start")
+        stopwatch_btn = Button(ar1, text = "Start" , command = lambda :self.initiate("Countdown"))
         stopwatch_btn.pack(side = LEFT)
+        
         
         ar2 = Frame(types, bg = "#ffffff")
         ar2.pack()
         drop_time_zone = Label(ar2 , text="Timer:", bg = "#ffffff").pack(side = LEFT)
 
-        timer_btn = Button(ar2, text = "Start")
+        timer_btn = Button(ar2, text = "Start" ,command = lambda :self.initiate("Timer"))
         timer_btn.pack(side = LEFT)
+
+        self.stopwatch_pu = Button(types, text = "Pause" , command = self.stop_cd)
+        self.stopwatch_pu.pack(side = LEFT)
         #-------------------------------------------------------------------------------------
 
 
@@ -222,10 +284,9 @@ class Screen:
         #-------------------------------------PICTURES-----------------------------------------------
 
         #--------------All Vars and options for option menus-------
-        self.current_static_pic = StringVar()
+        self.current_loc = StringVar()
         self.current_interval = IntVar()
         self.current_interval.set(20)
-        self.current_dir = StringVar()
 
         optPic = ["Please Choose Template","Time" ,"Pictures","Music"]
         self.typatempPic = StringVar()
@@ -246,7 +307,7 @@ class Screen:
         self.static_frameholder.pack()
 
         static_lbl = Label(self.static_frameholder , text  = "Static: " , bg = "#ffffff").pack(side = LEFT)
-        static_ent = Entry(self.static_frameholder , textvariable = self.current_static_pic, bg = "#ffffff")
+        static_ent = Entry(self.static_frameholder , textvariable = self.current_loc, bg = "#ffffff")
         static_ent.pack(side = LEFT)
         static_fileOpenBtn = Button(self.static_frameholder , text = "Open File" , command = self.openfile, bg = "#ffffff").pack(side = LEFT)
 
@@ -260,14 +321,61 @@ class Screen:
             lbls_frm = Label(self.roulette_optLblFrm,text = lbls, bg = "#ffffff").grid(row = x , column = 0)
             x+=1
 
-        interval_ent = Entry(self.roulette_optLblFrm , textvariable = self.current_interval, bg = "#ffffff").grid(row = 0 , column = 1)
-        directory_ent = Entry(self.roulette_optLblFrm , textvariable = self.current_dir, bg = "#ffffff").grid(row = 1 , column = 1)
+        self.interval_ent = Spinbox(self.roulette_optLblFrm ,from_ = 0,to = 1000, bg = "#ffffff")
+        self.interval_ent.grid(row = 0 , column = 1)
+        self.interval_ent.insert(0,"2")
+        directory_ent = Entry(self.roulette_optLblFrm , textvariable = self.current_loc, bg = "#ffffff").grid(row = 1 , column = 1)
         static_fileOpenBtn = Button(self.roulette_optLblFrm , text = "Open File" , command = self.opendir, bg = "#ffffff").grid(row = 1 , column = 2)
 
         drop_tempPic = OptionMenu(self.roulette_optLblFrm , self.typatempPic , *optPic )
         drop_tempPic.configure(state="disabled")
         drop_tempPic.grid(row = 2 , column = 1)
 
+
+        #-------------------------------------SETTINGS-----------------------------------------------
+        #-------------------------------------SETTINGS-----------------------------------------------
+        #-------------------------------------SETTINGS-----------------------------------------------
+
+        #--------------All Vars and options for option menus-------
+        self.contrSclVar = IntVar()
+        self.brightSclVar = IntVar()
+        self.brightSclVar.set(self.wm.brightness)
+        self.contrSclVar.set(self.wm.contrast)
+        
+        #--------------------END----------------------------
+        #for the Picture choice 
+        self.toolFrameSetts = Frame(toolframe,bg = "white")
+
+        self.togglebtn = Button(self.toolFrameSetts , relief = "raised" ,text = "ON" )
+        if self.wm.isOn:
+            self.togglebtn = Button(self.toolFrameSetts , relief = "sunken" ,text = "OFF" )
+        self.togglebtn.pack(anchor = "nw")
+
+        arrFrm  = Frame(self.toolFrameSetts ,  bg = "white")
+        arrFrm.pack(anchor = "nw")
+
+        
+
+        self.brightScl = Scale(arrFrm , variable = self.brightSclVar , from_ = 0 , to = 100 , orient = HORIZONTAL , label = "Brightness" , command = self.updatebc,length = 200)
+        self.brightScl.grid(row = 0, column = 0 , sticky = "nw")
+
+        btdBtn = Button(arrFrm , text = "Back to default",command = self.btd).grid(row = 2, column = 0, sticky = "nw")
+
+
+        self.contrScl = Scale(arrFrm , variable = self.contrSclVar , from_ = 0 , to = 100 , orient = HORIZONTAL , label = "Contrast", command = self.updatebc,length = 200)
+        self.contrScl.grid(row = 1, column = 0, sticky = "nw")
+
+        self.infoLblFrm = LabelFrame(self.toolFrameSetts, bg = "#ffffff" , text = "Monitor Info")
+        self.infoLblFrm.pack()
+
+        infos = {"Current Refresh Rate":"frequency","Maximum Refresh Rate":self.wm.allModes[-1][-1],"Color Depth":"colordepth","Orientation":"orientation","DPI":"dpi","Scale":"scale",
+                 "Size":f"{self.wm.size[0]}x{self.wm.size[1]}"}
+        for x in infos:
+            try:
+                z = getattr(self.wm,infos[x])
+            except Exception as e :
+                z = infos[x]
+            ylbl = Label(self.infoLblFrm , text = f"{x}: {z}",bg = "white").pack(anchor = "w")
         
 ##        self.toolFrameTime = Frame(toolframe,bg = "white", highlightbackground = "pink", highlightthickness = 5 )
 ##        
