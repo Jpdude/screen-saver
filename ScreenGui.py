@@ -8,6 +8,7 @@ import time
 import pymonctl as pmc
 import math
 from tkinter import messagebox
+import os
 win = Tk()
 win.title("Window Manager")
 wm = pmc.getAllMonitors()
@@ -18,7 +19,10 @@ scale = 35
 size = (int((get_monitors()[0].width)/math.gcd(get_monitors()[0].width,get_monitors()[0].height))*scale,int((get_monitors()[0].height)/math.gcd(get_monitors()[0].width,get_monitors()[0].height))*scale)
 print(size,math.gcd(get_monitors()[0].width,get_monitors()[0].height))
 #default image
-img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper")
+try:
+    img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper")
+except:
+    img = Image.open("poop.jpg")
 img = img.resize(size)
 img1 = ImageTk.PhotoImage(img)
 
@@ -120,8 +124,12 @@ class Screen:
         
     def deinitiate(self):
         try:
-            self.pause_counter = 0
             self.dis.tie.destroy()
+        except AttributeError:
+            pass
+        try:
+            self.pause_counter = 0
+            #self.dis.tie.destroy()
             self.dis.destroy()
             self.master.after_cancel(self.sess)
         except AttributeError:

@@ -7,6 +7,8 @@ from screeninfo import get_monitors
 import pyautogui
 import pymonctl as pmc
 import win32gui
+from zoneinfo import ZoneInfo
+print(ZoneInfo("America/New_York"))
 #print("rt",pmc.getAllMonitors()[2].setBrightness(30))
 print(datetime.now().minute)
 Directory = os.getcwd()
@@ -152,7 +154,7 @@ class Display:
         self.pic = pic
         self.display = display
         self.typeof = typeof.upper()
-        self.time = 0
+        self.timess = 0
         self.picn = 0
         self.change_time = inter
         self.dire = dire
@@ -176,7 +178,61 @@ class Display:
             self.can_1.pack(fill = "both",expand = True, ipadx = 0 , ipady = 0)
             if self.pic == 0:
                 self.roulette()
-        
+        elif self.typeof == "POOP":
+            self.tz_list =[]
+            self.t.rowconfigure(index = 0,weight = 1,uniform="u")
+            self.t.rowconfigure(index = 1,weight = 2,uniform="u")
+            self.t.rowconfigure(index = 2,weight = 1,uniform="u")
+
+            self.t.columnconfigure(index = 0,weight = 1,uniform="u")
+            self.t.columnconfigure(index = 1,weight = 2,uniform="u")
+            self.t.columnconfigure(index = 2,weight = 1,uniform="u")
+            
+            self.maps = [["Texas",ZoneInfo("CST6CDT")],["Nigeria",ZoneInfo("Africa/lagos")],["India",ZoneInfo("Asia/Kolkata")],
+                         ["Australia",ZoneInfo("Australia/Sydney")],
+                         ["Kamloops",ZoneInfo("Canada/Pacific")],["London",ZoneInfo("GMT")],
+                         ["Pennsylvania ",ZoneInfo("EST")],
+                         ["Mozambique",ZoneInfo("Africa/Harare")],["Manitoba",ZoneInfo("Africa/lagos")]]
+            y = 0
+            z = -1
+            for x in self.maps:
+                theme1 = "#808080" if datetime.now(x[1]).strftime("%p") == "AM" else "#000000"
+                theme2 = "#D3D3D3" if datetime.now(x[1]).strftime("%p") == "AM" else "#ffffff"
+                self.tz = Frame(self.t,bg = theme1,highlightbackground = "#ffffff",highlightthickness = 1)
+                self.tz.rowconfigure(index = 0,weight = 1,uniform="u")
+                self.tz.rowconfigure(index = 1,weight = 2,uniform="u")
+                self.tz.rowconfigure(index = 2,weight = 1,uniform="u")
+
+                self.tz.columnconfigure(index = 0,weight = 2,uniform="u")
+                self.tz.columnconfigure(index = 1,weight = 15,uniform="u")
+                self.tz.columnconfigure(index = 2,weight = 1,uniform="u")
+                self.tz.columnconfigure(index = 3,weight = 2,uniform="u")
+                
+                d = datetime.now(x[1]).strftime("%I:%M:%S %p")
+                print(x)
+                name = x[0]
+                print("nadm",name)
+                d = Label(self.tz, text=f'{name}:{datetime.now(x[1]).strftime("%a")}', font=('Consolas', 20, "bold",), fg=theme2,bg = theme1) 
+                d.grid(row = 0 , column = 0,sticky = "nw",columnspan = 100)
+                
+                h = Label(self.tz, text=f'{datetime.now(x[1]).strftime("%I:%M:%S")}', font=('Consolas', 30, "bold",), fg=theme2,bg = theme1) 
+                h.grid(row = 1 , column = 1,sticky = "e")
+                
+                a = Label(self.tz, text=f'{datetime.now(x[1]).strftime("%p")}', font=('Consolas', 15, "bold",), fg=theme2,bg = theme1) 
+                a.grid(row = 1 , column = 2 , sticky = "w")
+                #Evnentually youd have to add self.d and a to the roulttee
+
+                if y % 3 == 0:
+                    z+= 1
+                if z == 1 and y%3 == 1:
+                    h["font"] = ('Consolas', 80, "bold",)
+                print(z,y%3)    
+                self.tz.grid(row = z , column  = y%3 , sticky = "nsew")
+                y+=1
+                self.tz_list.append([h,x[1],d,a,self.tz])
+                
+            self.roulette()
+            
             
         else:
             self.t.rowconfigure(index = 0,weight = 1,uniform="u")
@@ -197,6 +253,7 @@ class Display:
             
             self.a = Label(self.t, text=f'{datetime.now().strftime("%p")}', font=('Consolas', 20, "bold",), fg="white",bg = "black") 
             self.a.grid(row = 1 , column = 2 , sticky = "ww")
+            #Evnentually youd have to add self.d and a to the roulttee
 
             if self.typeof == "TT":
                 self.a["text"] = "s"
@@ -243,8 +300,10 @@ class Display:
         self.img1 = ImageTk.PhotoImage(img) # made it an instance variable(self.) cuz if i dont tkinter stupidly disposes of the variable  
         return self.img1
 
-    def roulette(self):
+    def roulette(self,gg =""):
+        
         if self.typeof == "PIC":
+            #print("sg",int(self.time_func()),self.change_time)
             if int(self.time_func()) == self.change_time:
                 self.picn+=1
                 self.can_1.delete(self.image_id)
@@ -253,17 +312,34 @@ class Display:
                 except IndexError:
                     self.picn = 0
                     self.image_id = self.can_1.create_image((0,0) , image = self.gen_image(self.picn),anchor = "nw")
-                self.time = 0
+                self.timess = 0
                 
             ...
         else:
-            self.h["text"] = f'{datetime.now().strftime("%I:%M:%S")}'
+            if self.typeof == "POOP":
+                for x in self.tz_list:
+                    #text = datetime.now().replace(tzinfo = x[1])
+                    text = datetime.now().now(x[1])
+                    theme1 = "#808080" if datetime.now(x[1]).strftime("%p") == "AM" else "#000000"
+                    theme2 = "#D3D3D3" if datetime.now(x[1]).strftime("%p") == "AM" else "#ffffff"
+                    x[0]["bg"] =theme1
+                    x[2]["bg"] =theme1
+                    x[3]["bg"] =theme1
+
+                    x[0]["fg"] =theme2
+                    x[2]["fg"] =theme2
+                    x[3]["fg"] =theme2
+                    
+                    x[4]["bg"] = theme1
+                    x[0]["text"] = f'{text.strftime("%I:%M:%S")}'
+            else:
+                self.h["text"] = f'{datetime.now().strftime("%I:%M:%S")}'
         self.t.after(100,self.roulette)
 
     def time_func(self):
-        if self.time == 0:
-            self.time = time.time()
-        return time.time() - self.time
+        if self.timess == 0:
+            self.timess = time.time()
+        return time.time() - self.timess
 
     def enumHandler(self,hwnd, lParam):
         if win32gui.IsWindowVisible(hwnd):
@@ -291,8 +367,8 @@ class Display:
         
 #y = get_monitors()
 #print(y)
-#x = Display(win,y[2],typeof = "CD")
-#x.create()
+##x = Display(win,y[2],typeof = "POOP")
+##x.create()
 ##
 ##z = Display(win,y[1],typeof = "P")
 ##z.create()
