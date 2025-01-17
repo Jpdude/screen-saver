@@ -55,14 +55,13 @@ class TestScreenSaver(unittest.TestCase):
         b = int(self.dis4.tie.times)
         
         print(a,b)
-        self.assertTrue(a == 3 or a == 6 or a ==5 or a ==4)#Depends on when the tests finis unfortunately
+        self.assertTrue(a == 3 or a == 6 or a ==5 or a ==4)#Depends on when the tests finishes unfortunately
         self.assertTrue(b == self.dis4.tie.countdown)
         self.assertTrue(self.dis4.d["text"] == "TIMES UP!")
         self.assertFalse(self.dis4.tie.active)
 
         
     def test_roulette_function(self):
-        print(self.dis6.pic_list)
         self.assertTrue(self.dis6.pic_list)
         pass
 

@@ -143,7 +143,7 @@ class Display:
             if self.dire != 0:
                 self.get_pic_list()
             self.can_1 = Canvas(self.t, width = self.display.width , height = self.display.height,bg = "#000000")
-            self.image_id = self.can_1.create_image((0,0) , image = self.gen_image(self.pic),anchor = "nw")
+            self.image_id = self.can_1.create_image((0,0) , image = self.gen_image(self.pic if self.pic else 0),anchor = "nw")
             self.can_1.pack(fill = "both",expand = True, ipadx = 0 , ipady = 0)
             if self.pic == None:#if not given a static picture it runs the roulette
                 self.roulette()
@@ -252,7 +252,7 @@ class Display:
         
     def destroy(self):
         self.t.withdraw()
-        #self.t.after_cancel(self.callback)
+        self.t.after_cancel(self.callback)# Weirdly if this line is commented out the program runs faster
         
     def getTime(self):
         try:
@@ -261,9 +261,8 @@ class Display:
             return None
     
     
-    def gen_image(self,n,strech = True):
+    def gen_image(self,n=0,strech = True):
         if self.pic == None:
-            n = 0
             img = Image.open(self.dire +'/'+self.pic_list[n])
         else:
             try:
@@ -311,7 +310,7 @@ class Display:
                     x[0]["text"] = f'{text.strftime("%I:%M:%S")}'
             else:
                 self.h["text"] = f'{datetime.now().strftime("%I:%M:%S")}'
-        self.t.after(100,self.roulette)
+        self.callback = self.t.after(100,self.roulette)
 
     def time_func(self):
         if self.timess == 0:
