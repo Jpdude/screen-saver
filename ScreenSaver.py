@@ -8,64 +8,21 @@ import pyautogui
 import pymonctl as pmc
 import win32gui
 from zoneinfo import ZoneInfo
-print(ZoneInfo("America/New_York"))
-#print("rt",pmc.getAllMonitors()[2].setBrightness(30))
-print(datetime.now().minute)
+import argparse
+
+
 Directory = os.getcwd()
-print('Directoy:',Directory)
-
             
-def full(self):
-    if win.attributes('-fullscreen'):
-        win.attributes('-fullscreen',False)
-        t.attributes('-fullscreen',False)
-    else:
-        win.attributes('-fullscreen',True)
-        t.attributes('-fullscreen',True)
-        win.geometry("300x322-1959+0")
-        
-#win = Tk(screenName = ":0.2")
-
-##print(win.winfo_screen())
-#win.title("{POOP")
-##win.geometry("300x322-1959+0")
-##screen_width = win.winfo_screenwidth()
-##screen_heigth = win.winfo_screenheight()
-##frame1 = Frame(win, bg = "#000000")
-##img = Image.open("mini.jpg")
-##img = img.resize((1920,1080))
-##print(img.size,)
-###img = img.resize((1920,1080))
-##img2 = ImageTk.PhotoImage(img)
-##t = Toplevel(win)
-##t.title("poop")
-##can_1 = Canvas(frame1, width = screen_width , height = screen_heigth,bg = "#000000")
-##can_1.create_image((0,0) , image = img2,anchor = "nw")
-##can_1.pack(fill = "both",expand = True, ipadx = 0 , ipady = 0)
-##
-##img = Image.open("poo2.jpg")
-##img = img.resize((1920,1080))
-##img1 = ImageTk.PhotoImage(img)
-##can_2 = Canvas(t, width = screen_width , height = screen_heigth,bg = "#000000")
-##can_2.create_image((0,0) , image = img1,anchor = "nw")
-##can_2.pack(fill = "both",expand = True, ipadx = 0 , ipady = 0)
-##frame1.pack(fill = "both",expand = True)
-##win.bind("f",full)
 
 class Timer():
     def __init__(self,display,win,countdown = None):
-        self.buffer = 0
-        #self.time = int(display.time)
-        self.time = countdown
-        self.active = False
-        self.times = "000"
-        self.display = display
-        self.countdown = countdown
-        self.win = win
-        #self.win.bell() very useful for debugging
-        print("wrwrghe",countdown,self.time)
+        self.buffer = 0 #Buffer Incase paused
+        self.countdown = countdown # Countdown meaning the the time to countdown
+        self.active = False #Needed for pausing and unpausing
+        self.display = display #The display instance to be edited
+        self.win = win #Window needed for event , But self.diplay.t could be used havent tested it yet
 
-
+    #Initiates Timer 
     def initiate(self):
         self.buffer = 0
         self.initial = time.time()
@@ -75,50 +32,58 @@ class Timer():
     def stop(self):
         self.unpause()
         self.active = False
-        print("Time Elapsed",self.times)
         
         
+    #Destroys timer event
     def destroy(self):
         self.active = False
         self.win.after_cancel(self.callback)
         
-
+    #self.times is the current time
     def start(self):
-        #self.countdown = countdown #prob
         stop = time.time()
-        times = stop - (self.initial+self.buffer)
+        self.times = stop - (self.initial+self.buffer)#Adjusting time incase Paused
             
-        self.times = times
         if self.countdown:
-            red = True if (0.5*self.time) <= self.times else False
+            red = True if (0.5*self.countdown) <= self.times else False #Checking if the countdown has gone down by half to display Error message
             if red:
                 self.display.h['foreground'] = "red"
                 self.display.d['foreground'] = "red"
                 self.display.d['text'] = "YOU'RE RUNNING OUT OF TIME!"
             else:
                 self.display.h['foreground'] = "white"
-
-        t = int(self.times/60)
+        t = int(self.times/60) 
         t = str(t)
         r = int(self.times%60)
         if self.countdown:
-            if self.time == int(self.times):
+            if self.countdown == int(self.times):
                 self.display.h['text'] = "00:00.00"
                 self.display.d["text"] = "TIMES UP!"
+                self.win.bell()
                 self.active = False
+                self.win.bell()
+                self.win.bell()
                 self.win.bell()
                 
                 
-            t1 = int(self.time/60)
-            r1 = int(self.time%60)
-            t = str(int(t1) - int(t))
-            r = r1 - r
-        if r == 0 or r in range(0,10) :
+            t1 = int(self.countdown/60) 
+            r1 = int(self.countdown%60)
+            tp = int(int(t1) - int(t))
+            t = int(int(t1) - int(t)-1) if self.countdown%60 == 0 else tp
+            if t == -1:
+                t = "00"
+            if self.countdown%60 == 0:
+                r = 59 - (r - r1)
+            else:
+                r = r1 - r
+            
+        if r == 0 or r in range(0,10) :# Making sure it displays as double digits i.e 01 instead of 1
             r = '0' + str(r)
-        #print(str(self.times%1)[2:4])
-        #print(self.times - (int(r)*60))
+        if t in range(0,10):
+            t = '0' + str(t)
+        
         try:
-            if self.time != int(self.times):
+            if self.countdown != int(self.times):
                 self.display.h['text'] = f"{t}:{r}.{str(self.times%1)[2:4]}" # I know im meant to do %60 at the self.times ill do it l8r
                 if self.active:
                     self.callback = self.win.after(100,self.start)
@@ -149,8 +114,11 @@ class Timer():
         pass
 
 class Display:
-    def __init__(self,master,display,pic = 0,typeof = "PIC",dire = 0, inter = 20,dupObj="",time = 5):
+
+    def __init__(self,master,display,pic = None,typeof = "PIC",dire = 0, inter = 20,time = 5):
         self.master = master
+        if not self.master:
+            self.master = Display.win 
         self.pic = pic
         self.display = display
         self.typeof = typeof.upper()
@@ -158,12 +126,13 @@ class Display:
         self.picn = 0
         self.change_time = inter
         self.dire = dire
-        self.dupObj = dupObj
         self.time = time
+        print("ksfgs")
         
 
 
     def create(self):
+        print("Created")
         self.t = Toplevel(self.master,bg = "black")
         self.t.geometry(f"{self.display.width}x{self.display.height}+{self.display.x}+{self.display.y}")
         self.t.title("Screen"+self.display.name[-1])
@@ -176,9 +145,10 @@ class Display:
             self.can_1 = Canvas(self.t, width = self.display.width , height = self.display.height,bg = "#000000")
             self.image_id = self.can_1.create_image((0,0) , image = self.gen_image(self.pic),anchor = "nw")
             self.can_1.pack(fill = "both",expand = True, ipadx = 0 , ipady = 0)
-            if self.pic == 0:
+            if self.pic == None:#if not given a static picture it runs the roulette
                 self.roulette()
-        elif self.typeof == "POOP":
+
+        elif self.typeof == "WT":#Wt means World time
             self.tz_list =[]
             self.t.rowconfigure(index = 0,weight = 1,uniform="u")
             self.t.rowconfigure(index = 1,weight = 2,uniform="u")
@@ -209,9 +179,7 @@ class Display:
                 self.tz.columnconfigure(index = 3,weight = 2,uniform="u")
                 
                 d = datetime.now(x[1]).strftime("%I:%M:%S %p")
-                print(x)
                 name = x[0]
-                print("nadm",name)
                 d = Label(self.tz, text=f'{name}:{datetime.now(x[1]).strftime("%a")}', font=('Consolas', 20, "bold",), fg=theme2,bg = theme1) 
                 d.grid(row = 0 , column = 0,sticky = "nw",columnspan = 100)
                 
@@ -226,7 +194,7 @@ class Display:
                     z+= 1
                 if z == 1 and y%3 == 1:
                     h["font"] = ('Consolas', 80, "bold",)
-                print(z,y%3)    
+       
                 self.tz.grid(row = z , column  = y%3 , sticky = "nsew")
                 y+=1
                 self.tz_list.append([h,x[1],d,a,self.tz])
@@ -255,32 +223,36 @@ class Display:
             self.a.grid(row = 1 , column = 2 , sticky = "ww")
             #Evnentually youd have to add self.d and a to the roulttee
 
-            if self.typeof == "TT":
+            if self.typeof == "TT":# TT means Timer
                 self.a["text"] = "s"
                 self.tie = Timer(self,self.master)
                 self.tie.initiate()
                 self.tie.start()
-            elif self.typeof == "CD":
+            elif self.typeof == "CD":# CD means CountDown
                 self.a["text"] = "s"
                 self.tie = Timer(self,self.master,countdown = self.time)
                 self.tie.initiate()
                 self.tie.start()
                 
 
-            else:
+            else:# if no option is given it displays the normal time
                 self.roulette()
-
+    #gets all the pictures in the given dir 
     def get_pic_list(self):
         self.pic_list = []
-        for path , dirs , files in os.walk(self.dire):
-            pic_no = 0
-            for x in files:
-                if x.endswith(".jpg") == True or x.endswith(".png") == True or x.endswith(".jpeg") == True or x.endswith(".JPG") == True:
-                    pic_no += 1
-                    self.pic_list.append(str(x))
+        try:
+            for path , dirs , files in os.walk(self.dire):
+                pic_no = 0
+                for x in files:
+                    if x.endswith(".jpg") == True or x.endswith(".png") == True or x.endswith(".jpeg") == True or x.endswith(".JPG") == True:
+                        pic_no += 1
+                        self.pic_list.append(str(x))
+        except Exception as e:
+            return f"Error while loading Directory {e}"
         
     def destroy(self):
         self.t.withdraw()
+        #self.t.after_cancel(self.callback)
         
     def getTime(self):
         try:
@@ -288,11 +260,16 @@ class Display:
         except:
             return None
     
+    
     def gen_image(self,n,strech = True):
-        if self.pic == 0:
+        if self.pic == None:
+            n = 0
             img = Image.open(self.dire +'/'+self.pic_list[n])
         else:
-            img = Image.open(n)
+            try:
+                img = Image.open(n)
+            except Exception as e:
+                return f"Error loading Path{e}"
         
         if strech:
             img = img.resize((self.display.width,self.display.height))
@@ -303,7 +280,7 @@ class Display:
     def roulette(self,gg =""):
         
         if self.typeof == "PIC":
-            #print("sg",int(self.time_func()),self.change_time)
+            
             if int(self.time_func()) == self.change_time:
                 self.picn+=1
                 self.can_1.delete(self.image_id)
@@ -313,12 +290,12 @@ class Display:
                     self.picn = 0
                     self.image_id = self.can_1.create_image((0,0) , image = self.gen_image(self.picn),anchor = "nw")
                 self.timess = 0
+                self.t.update_idletasks()
                 
             ...
         else:
-            if self.typeof == "POOP":
+            if self.typeof == "WT":
                 for x in self.tz_list:
-                    #text = datetime.now().replace(tzinfo = x[1])
                     text = datetime.now().now(x[1])
                     theme1 = "#808080" if datetime.now(x[1]).strftime("%p") == "AM" else "#000000"
                     theme2 = "#D3D3D3" if datetime.now(x[1]).strftime("%p") == "AM" else "#ffffff"
@@ -353,29 +330,58 @@ class Display:
             self.t.attributes('-fullscreen',True)
 
         win32gui.EnumWindows(self.enumHandler, None)
+
+     
     
-##        print(self.display.x)
-##        if self.display.x > 0 or self.display.y > 0:
-##            pyautogui.hotkey('shift','win', 'left', interval=0.1)
-##        elif self.display.x < 0 or self.display.y < 0:
-##            pyautogui.hotkey('shift', 'win', 'right', interval=0.1)
-##        else:
-##            pass
 
-
+def main():
+    win = Tk()
+    # Display(win , display=get_monitors()[0],typeof = "DF").create()
+    print("fsg")
+   
+    print("adhb")
+    parser = argparse.ArgumentParser(prog="ScreenSaver",description="ScreenSaver")
+    parser.add_argument("-d","--display", required=True, action='append',help="Monitor to display on i.e 1 , 2 ,3 or '0 for all' ")
+    parser.add_argument("-pd","--picture",required=False, help="Path to picture to display")
+    parser.add_argument("-m","--mode", required=True ,choices = ["p", "tt", "cd", "wt", "df"], help = "Type of mode to display p tt cd wt or df" )
+    parser.add_argument("-dd","--directory",required= False, help="dirctory for roulette")
+    parser.add_argument("-i","--interval",required= False, help="Interval for roulette")
+    parser.add_argument("-t","--time",required= False, help="time for timer")
+    parser.add_argument("-y",action='store_true', help="amount of search results to returns")
+    args = parser.parse_args()
+    monitors = get_monitors()
+    display_list = args.display
+    
+    if monitors:
+        for m in enumerate(monitors):
+            if "0" not in display_list:
+                print(m[0],display_list)
+                if str(m[0]) in display_list:
+                    print("dbasghi")
+                    d = Display(master = win , display = m[1] , typeof = args.mode.upper() , pic = args.picture , dire = args.directory , inter = args.interval , time = args.time )
+                    d.create() 
+                    
+            else:
+                print("asdibhg")
+                d = Display(master = win , display = m[1] , typeof = args.mode.upper() , pic = args.picture , dire = args.directory , inter = args.interval , time = args.time )
+                d.create() 
+            d.full("j")
             
-        
-#y = get_monitors()
-#print(y)
-##x = Display(win,y[2],typeof = "POOP")
-##x.create()
-##
-##z = Display(win,y[1],typeof = "P")
-##z.create()
-#win.mainloop()       
-
-#Windows wallpaper
-#img = Image.open("C:\\Users\\user\\AppData\\Roaming\\Microsoft\\Windows\\Themes\\TranscodedWallpaper")
-def resiszer(img):
-    ...
     
+    win.mainloop()
+    
+    
+    
+    
+    
+if __name__ == "__main__":
+    main()
+ 
+
+    
+  
+    
+   
+
+
+

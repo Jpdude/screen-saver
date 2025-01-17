@@ -68,6 +68,18 @@ class Screen:
             for child in self.static_frameholder.winfo_children():
                 child.configure(state = "normal")
             self.roulette_optLblFrm.pack_forget()
+
+    def real(self,x,y,z):
+        raw_time_m = int(int(self.set_time.get())/60)%60
+        raw_time_h = int(int(self.set_time.get())/3600)
+        raw_time_s = int(self.set_time.get())%60
+        raw_time_m = '0' + str(raw_time_m) if raw_time_m < 10 else raw_time_m
+        raw_time_h = '0' + str(raw_time_h) if raw_time_h < 10 else raw_time_h
+        raw_time_s = '0' + str(raw_time_s) if raw_time_s < 10 else raw_time_s
+        
+       
+        raw_time = f"{raw_time_h}:{raw_time_m}.{raw_time_s}"
+        self.real_time["text"] = raw_time
             
     def poop(self,x,y,z):
             try:
@@ -149,7 +161,7 @@ class Screen:
                 typee = "CD"
             elif types == "Timer":
                 typee = "TT"
-            self.dis = Display(win , self.screen,typeof = typee,dupObj = self,time = int(self.set_time.get()))
+            self.dis = Display(win , self.screen,typeof = typee,time = int(self.set_time.get()))
             self.dis.create()
             win.update_idletasks()
             self.dis.full("f")
@@ -160,9 +172,9 @@ class Screen:
             else:
                 print("asdgh",self.roulette_ckbtn_var)
                 if self.roulette_ckbtn_var.get() == 0:
-                    self.dis = Display(win , self.screen , typeof = "PIC" , pic = self.current_loc.get(),dupObj = self  )
+                    self.dis = Display(win , self.screen , typeof = "PIC" , pic = self.current_loc.get() )
                 else:
-                    self.dis = Display(win , self.screen , typeof = "PIC" , pic = 0 , dire = self.current_loc.get() ,inter = int(self.interval_ent.get()),dupObj = self)
+                    self.dis = Display(win , self.screen , typeof = "PIC" , pic = None , dire = self.current_loc.get() ,inter = int(self.interval_ent.get()))
 
                 self.dis.create()
                 win.update_idletasks()
@@ -218,7 +230,7 @@ class Screen:
         deinit = Button(toolframe , text = "Deinitiate" , command = self.deinitiate)
         deinit.pack(anchor = "ne")
         
-
+        self.set_time.trace("w",self.real)
         self.typa.trace("w",self.poop)
         
         #for the time choice 
@@ -241,6 +253,8 @@ class Screen:
         types = LabelFrame(self.toolFrameTime, text = "Types", bg = "#ffffff" )
         types.pack(padx=(0,20))
 
+        self.real_time = Label(types,text = "Placeholder",bg = "#ffffff")
+        self.real_time.pack()
         corner_time = Spinbox(types, bg = "#ffffff" , width = 7 , textvariable = self.set_time , relief = "flat" ,from_=0, to=10000, increment=30)  
         corner_time.pack(anchor = "ne" , padx = (0,5), pady = (0,5))
         
