@@ -1,4 +1,5 @@
-import unittest 
+import unittest
+print(type(unittest),unittest.__path__)
 from ScreenSaver import *
 from tkinter import *
 import _tkinter
@@ -41,7 +42,7 @@ class TestScreenSaver(unittest.TestCase):
         self.assertTrue(self.dis5.t.winfo_exists())
         
     
-    def test_fullscreen(self):
+    def test_task_screen(self):
         self.dis1.full("j")
         self.assertTrue(self.dis1.t.attributes("-fullscreen"))
 

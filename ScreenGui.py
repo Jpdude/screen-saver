@@ -3,7 +3,7 @@ from tkinter import filedialog as fd
 from screeninfo import get_monitors
 from scrollable import ScrollableFrame
 from PIL import Image , ImageTk
-from ScreenSaver import Display
+from ScreenSaver import ScreenSaver
 import time
 import pymonctl as pmc
 import math
@@ -155,12 +155,14 @@ class Screen:
             pass
         if self.typa.get() == "Time":
             print(self.set_time.get())
-            if types == "":
+            if types == "": 
                 typee = "DF"
             elif types == "Countdown":
                 typee = "CD"
             elif types == "Timer":
                 typee = "TT"
+            elif types == "WW":
+                typee = "WT" 
             self.dis = Display(win , self.screen,typeof = typee,time = int(self.set_time.get()))
             self.dis.create()
             win.update_idletasks()
@@ -272,6 +274,13 @@ class Screen:
 
         timer_btn = Button(ar2, text = "Start" ,command = lambda :self.initiate("Timer"))
         timer_btn.pack(side = LEFT)
+
+        ar3 = Frame(types, bg = "#ffffff")
+        ar3.pack()
+        drop_worldwide = Label(ar3 , text="Worldwide:", bg = "#ffffff").pack(side = LEFT)
+
+        worldwide_btn = Button(ar3, text = "Start" ,command = lambda :self.initiate("WW"))
+        worldwide_btn.pack(side = LEFT)
 
         self.stopwatch_pu = Button(types, text = "Pause" , command = self.stop_cd)
         self.stopwatch_pu.pack(side = LEFT)
