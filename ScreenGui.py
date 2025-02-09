@@ -3,7 +3,7 @@ from tkinter import filedialog as fd
 from screeninfo import get_monitors
 from scrollable import ScrollableFrame
 from PIL import Image , ImageTk
-from ScreenSaver import ScreenSaver
+from ScreenSaver import Display
 import time
 import pymonctl as pmc
 import math
