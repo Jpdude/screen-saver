@@ -14,13 +14,16 @@ It also gives you some Information about the monitors that are connected to your
 ```sh
 git clone https://github.com/Jpdude/screen-saver
 ```
+```sh
+pip install -r requirements.txt
+```
 ## Usage
 ```sh
 ScreenSaver.py --display 0 --mode df
 ```
 cli version seems really buggy right now I suggest you try the GUI version. Just move to the directory where it's located and run this code:
 ```sh
-ScreenGui.py
+py ScreenGui.py
 ```
 ## Known Issues
 * CLI not fully integrated and really buggy
